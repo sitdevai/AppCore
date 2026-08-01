@@ -1,0 +1,21 @@
+@AppCore.Api_HostAddress = http://localhost:5080
+
+GET {{AppCore.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+
+GET {{AppCore.Api_HostAddress}}/health/live
+Accept: application/json
+
+###
+
+GET {{AppCore.Api_HostAddress}}/health/ready
+Accept: application/json
+
+###
+
+GET {{AppCore.Api_HostAddress}}/api/v1/system/info
+Accept: application/json
+
+###

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>1b281fc0-16dd-4a2e-9370-547790ef262b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Http" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AppCore.Application\AppCore.Application.csproj" />
+    <ProjectReference Include="..\AppCore.Infrastructure\AppCore.Infrastructure.csproj" />
+    <ProjectReference Include="..\AppCore.Contracts\AppCore.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
