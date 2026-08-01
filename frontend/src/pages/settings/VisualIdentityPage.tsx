@@ -34,13 +34,7 @@ const schema = z.object({
   headerColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   patternColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-  backgroundPattern: z.enum([
-    'None',
-    'Dots',
-    'Grid',
-    'Diagonal',
-    'Geometric',
-  ]),
+  backgroundPattern: z.enum(['None', 'Dots', 'Grid', 'Diagonal', 'Geometric']),
   version: z.number(),
 })
 

@@ -1,7 +1,7 @@
-using Asp.Versioning;
-using Asp.Versioning.Builder;
 using AppCore.Api.Validation;
 using AppCore.Contracts.System;
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 
 namespace AppCore.Api.Endpoints;
 

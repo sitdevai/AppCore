@@ -1,7 +1,6 @@
 using System.Net;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
-using Asp.Versioning;
 using AppCore.Api.Configuration;
 using AppCore.Api.ErrorHandling;
 using AppCore.Api.Middleware;
@@ -12,6 +11,7 @@ using AppCore.Application.Security;
 using AppCore.Infrastructure;
 using AppCore.Infrastructure.Branding;
 using AppCore.Infrastructure.Persistence;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
