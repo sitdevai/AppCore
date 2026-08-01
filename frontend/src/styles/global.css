@@ -50,8 +50,22 @@
 
 :root[data-background-pattern='geometric'] {
   --page-background-image:
-    linear-gradient(30deg, color-mix(in srgb, var(--pattern-color) 9%, transparent) 12%, transparent 12.5%, transparent 87%, color-mix(in srgb, var(--pattern-color) 9%, transparent) 87.5%, color-mix(in srgb, var(--pattern-color) 9%, transparent)),
-    linear-gradient(150deg, color-mix(in srgb, var(--pattern-color) 9%, transparent) 12%, transparent 12.5%, transparent 87%, color-mix(in srgb, var(--pattern-color) 9%, transparent) 87.5%, color-mix(in srgb, var(--pattern-color) 9%, transparent));
+    linear-gradient(
+      30deg,
+      color-mix(in srgb, var(--pattern-color) 9%, transparent) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      color-mix(in srgb, var(--pattern-color) 9%, transparent) 87.5%,
+      color-mix(in srgb, var(--pattern-color) 9%, transparent)
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--pattern-color) 9%, transparent) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      color-mix(in srgb, var(--pattern-color) 9%, transparent) 87.5%,
+      color-mix(in srgb, var(--pattern-color) 9%, transparent)
+    );
   --page-background-size: 48px 84px;
   --page-background-blend-mode: normal;
 }
@@ -549,8 +563,22 @@ select {
 
 .branding-preview__canvas--geometric {
   background-image:
-    linear-gradient(30deg, color-mix(in srgb, var(--preview-pattern) 10%, transparent) 12%, transparent 12.5%, transparent 87%, color-mix(in srgb, var(--preview-pattern) 10%, transparent) 87.5%, color-mix(in srgb, var(--preview-pattern) 10%, transparent)),
-    linear-gradient(150deg, color-mix(in srgb, var(--preview-pattern) 10%, transparent) 12%, transparent 12.5%, transparent 87%, color-mix(in srgb, var(--preview-pattern) 10%, transparent) 87.5%, color-mix(in srgb, var(--preview-pattern) 10%, transparent));
+    linear-gradient(
+      30deg,
+      color-mix(in srgb, var(--preview-pattern) 10%, transparent) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      color-mix(in srgb, var(--preview-pattern) 10%, transparent) 87.5%,
+      color-mix(in srgb, var(--preview-pattern) 10%, transparent)
+    ),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--preview-pattern) 10%, transparent) 12%,
+      transparent 12.5%,
+      transparent 87%,
+      color-mix(in srgb, var(--preview-pattern) 10%, transparent) 87.5%,
+      color-mix(in srgb, var(--preview-pattern) 10%, transparent)
+    );
   background-size: 48px 84px;
 }
 

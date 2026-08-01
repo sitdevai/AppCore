@@ -1,11 +1,11 @@
 using System.Security.Claims;
-using Asp.Versioning;
-using Asp.Versioning.Builder;
 using AppCore.Api.Security;
 using AppCore.Api.Validation;
 using AppCore.Application.Branding;
 using AppCore.Application.Security;
 using AppCore.Contracts.Branding;
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using Microsoft.AspNetCore.Antiforgery;
 
 namespace AppCore.Api.Endpoints;
