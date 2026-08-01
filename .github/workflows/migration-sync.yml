@@ -1,0 +1,55 @@
+name: Temporary migration synchronization
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  migration:
+    if: github.head_ref == 'ci-validation-temp'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out validation branch
+        uses: actions/checkout@v6
+        with:
+          ref: ci-validation-temp
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore backend/AppCore.sln
+
+      - name: Install EF Core tool
+        run: dotnet tool install --global dotnet-ef --version 10.0.4
+
+      - name: Generate synchronization migration
+        if: ${{ hashFiles('backend/src/AppCore.Infrastructure/Persistence/Migrations/*SynchronizeAppCoreTemplateSeed.cs') == '' }}
+        env:
+          Database__ConnectionString: Host=localhost;Port=5432;Database=appcore_design;Username=postgres;Password=postgres
+        run: |
+          dotnet ef migrations add SynchronizeAppCoreTemplateSeed \
+            --project backend/src/AppCore.Infrastructure/AppCore.Infrastructure.csproj \
+            --startup-project backend/src/AppCore.Infrastructure/AppCore.Infrastructure.csproj \
+            --context ApplicationDbContext \
+            --output-dir Persistence/Migrations
+          dotnet format backend/AppCore.sln --no-restore
+
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No migration changes required."
+            exit 0
+          fi
+          git commit -m "Synchronize AppCore template migration model"
+          git push origin HEAD:ci-validation-temp
