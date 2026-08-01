@@ -1,3 +1,0 @@
-# CI Validation
-
-Temporary validation marker. This file will not be merged.
