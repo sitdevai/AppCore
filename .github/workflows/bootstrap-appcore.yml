@@ -1,0 +1,49 @@
+name: Bootstrap AppCore
+
+on:
+  push:
+    paths:
+      - .github/workflows/bootstrap-appcore.yml
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out AppCore
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download sanitized template artifact
+        env:
+          TEMPLATE_URL: "https://sdmntprsoutheastus3.oaiusercontent.com/files/00000000-ac64-820c-98b2-38bade58db44/raw?se=2026-08-01T14:42:16Z&sp=r&sv=2026-02-06&sr=b&scid=490229c8-f744-566c-a4a3-04986d36a639&skoid=78501c7f-f65d-4e8d-9110-bed29e1beb41&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-01T12:37:32Z&ske=2026-08-02T12:37:32Z&sks=b&skv=2026-02-06&sig=9//re3qO9sEftZFqhzARL/3YcnGrpaTjMR%2BT9BRZNcY%3D"
+        run: |
+          curl --fail --location "$TEMPLATE_URL" --output /tmp/appcore-template-artifact.zip
+          mkdir -p /tmp/appcore-artifact /tmp/appcore-template
+          unzip -q /tmp/appcore-template-artifact.zip -d /tmp/appcore-artifact
+          tar -xzf /tmp/appcore-artifact/appcore-template.tar.gz -C /tmp/appcore-template
+
+      - name: Publish reusable template
+        run: |
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/appcore-template/. .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Initialize AppCore reusable application template"
+          git push origin HEAD:main
+
+      - name: Enable GitHub template repository mode
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl --fail-with-body --request PATCH \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}" \
+            --data '{"is_template":true}'
