@@ -56,3 +56,44 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+
+  template-generation:
+    name: Template generation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Create isolated generated application
+        run: |
+          mkdir -p /tmp/generated-application
+          cp -a . /tmp/generated-application/
+          rm -rf /tmp/generated-application/.git
+      - name: Initialize generated application
+        working-directory: /tmp/generated-application
+        shell: pwsh
+        run: |
+          ./scripts/Initialize-App.ps1 `
+            -RootNamespace Example.Product `
+            -ProductName "Example Product" `
+            -ProductNameArabic "نظام مثال" `
+            -ShortProductName "Example" `
+            -ShortProductNameArabic "مثال" `
+            -DatabaseName example_product
+      - name: Build generated backend
+        working-directory: /tmp/generated-application
+        run: |
+          dotnet restore backend/Example.Product.sln
+          dotnet build backend/Example.Product.sln --configuration Release --no-restore
+      - name: Build generated frontend
+        working-directory: /tmp/generated-application/frontend
+        run: |
+          npm ci
+          npm run build
