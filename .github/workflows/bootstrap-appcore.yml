@@ -1,9 +1,9 @@
 name: Bootstrap AppCore
 
 on:
-  push:
-    paths:
-      - .github/workflows/bootstrap-appcore.yml
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -12,14 +12,15 @@ jobs:
   bootstrap:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out AppCore
+      - name: Check out trusted main branch
         uses: actions/checkout@v6
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Download sanitized template artifact
         env:
-          TEMPLATE_URL: "https://sdmntprsoutheastus3.oaiusercontent.com/files/00000000-ac64-820c-98b2-38bade58db44/raw?se=2026-08-01T14:42:16Z&sp=r&sv=2026-02-06&sr=b&scid=490229c8-f744-566c-a4a3-04986d36a639&skoid=78501c7f-f65d-4e8d-9110-bed29e1beb41&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-01T12:37:32Z&ske=2026-08-02T12:37:32Z&sks=b&skv=2026-02-06&sig=9//re3qO9sEftZFqhzARL/3YcnGrpaTjMR%2BT9BRZNcY%3D"
+          TEMPLATE_URL: "https://sdmntprsouthcentralus.oaiusercontent.com/files/00000000-9bf8-81f7-a9d9-a00b5076230e/raw?se=2026-08-01T14:46:58Z&sp=r&sv=2026-02-06&sr=b&scid=61401c89-ea3a-53fb-9dcf-85c7ffd64983&skoid=78501c7f-f65d-4e8d-9110-bed29e1beb41&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-01T01:23:15Z&ske=2026-08-02T01:23:15Z&sks=b&skv=2026-02-06&sig=pEgsHFx1vr9QlVXW5xkvml03fH%2BSH6JDEzX5Qq25M1A%3D"
         run: |
           curl --fail --location "$TEMPLATE_URL" --output /tmp/appcore-template-artifact.zip
           mkdir -p /tmp/appcore-artifact /tmp/appcore-template
