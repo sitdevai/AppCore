@@ -25,7 +25,7 @@ describe('AppShell', () => {
     renderWithProviders(<AppShell />)
 
     expect(
-      await screen.findByRole('link', { name: 'نظام التطبيق' }),
+      await screen.findByRole('link', { name: 'AppCore' }),
     ).toBeInTheDocument()
     expect(
       screen.getByRole('menuitem', { name: /الرئيسية/ }),
