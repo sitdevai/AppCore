@@ -1,0 +1,34 @@
+name: Clear Open Shop Ads
+
+on:
+  push:
+    paths:
+      - '.github/workflows/clear-open-shop-ads.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clear:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clear all current Open Shop listings
+        shell: bash
+        run: |
+          set -euo pipefail
+          NS='openshop-demo-sitdevai-20260815-fixed'
+          BASE='https://mantledb.sh/v2'
+          curl -fsSL "$BASE/list/$NS" -o /tmp/list.json || true
+          if [ ! -s /tmp/list.json ]; then
+            echo 'No listing response; nothing to clear.'
+            exit 0
+          fi
+          jq -r '.entries[]?.path // empty' /tmp/list.json | grep '^ads/' > /tmp/ads.txt || true
+          count=$(wc -l < /tmp/ads.txt | tr -d ' ')
+          echo "Deleting $count listings"
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            curl -fsS -X DELETE "$BASE/$NS/$path" >/dev/null || true
+          done < /tmp/ads.txt
+          echo 'Open Shop listings cleared.'
