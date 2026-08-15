@@ -1,0 +1,45 @@
+name: Build Open Shop APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/open-shop-android-os-1.4.4.tar.gz.b64'
+      - '.github/workflows/open-shop-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore Android project
+        run: |
+          mkdir -p open-shop-android
+          base64 -d .github/open-shop-android-os-1.4.4.tar.gz.b64 > /tmp/open-shop-android.tar.gz
+          tar -xzf /tmp/open-shop-android.tar.gz -C open-shop-android
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install SDK
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Build APK
+        working-directory: open-shop-android
+        run: gradle --no-daemon app:assembleDebug --stacktrace
+      - name: Rename APK
+        run: cp open-shop-android/app/build/outputs/apk/debug/app-debug.apk Open-Shop-OS-1.4.4.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Open-Shop-OS-1.4.4
+          path: Open-Shop-OS-1.4.4.apk
+          if-no-files-found: error
