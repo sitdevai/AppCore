@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Open Shop P2P</title>
+<style>html,body,iframe{margin:0;width:100%;height:100%;border:0;background:#edf7ff}body{overflow:hidden}iframe{display:block}</style>
+</head>
+<body>
+<iframe id="app" src="live.html?v=042"></iframe>
+<script>
+const frame=document.getElementById('app');
+frame.addEventListener('load',()=>{
+  const w=frame.contentWindow,d=frame.contentDocument;
+  const peerLib=d.createElement('script');
+  peerLib.src='https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js';
+  peerLib.onload=()=>{
+    const s=d.createElement('script');
+    s.textContent=`
+(function(){
+  const wrapperUrl=new URL(parent.location.href);
+  const targetHost=wrapperUrl.searchParams.get('host')||'';
+  const amHost=!targetHost;
+  const HOST_KEY='os_demo_peer_host_id';
+  const ADS_KEY='os_demo_peer_ads';
+  let peer=null,hostConn=null;
+  const clients=new Map();
+  let stateText=amHost?'جارٍ تجهيز المشاركة':'جارٍ الاتصال...';
+
+  function status(t){stateText=t;const e=document.getElementById('syncState');if(e)e.textContent=t}
+  function rebuild(){ads=[...adsById.values()].sort((a,b)=>Number(b.id)-Number(a.id));if(guest&&current==='explore'){const e=document.getElementById('homeAds');if(e)e.innerHTML=adListHtml(ads)}}
+  function save(){if(amHost)localStorage.setItem(ADS_KEY,JSON.stringify([...adsById.values()]))}
+  function broadcast(m,except=''){for(const [id,c] of clients){if(id!==except&&c.open){try{c.send(m)}catch(e){}}}}
+  function apply(m,src){if(!m||typeof m!=='object')return;
+    if(m.type==='state'&&Array.isArray(m.ads)){adsById.clear();m.ads.forEach(a=>a&&a.id&&adsById.set(String(a.id),a));rebuild();status('متصل ومزامن');return}
+    if(m.type==='add'&&m.ad&&m.ad.id){adsById.set(String(m.ad.id),m.ad);rebuild();if(amHost){save();broadcast(m,src?.peer||'')}return}
+    if(m.type==='delete'&&m.id){adsById.delete(String(m.id));rebuild();if(amHost){save();broadcast(m,src?.peer||'')}return}
+    if(m.type==='request-state'&&amHost&&src?.open)src.send({type:'state',ads:[...adsById.values()]});
+  }
+  function wire(c){clients.set(c.peer,c);c.on('open',()=>{clients.set(c.peer,c);status('متصل: '+clients.size+' جهاز');c.send({type:'state',ads:[...adsById.values()]})});c.on('data',m=>apply(m,c));c.on('close',()=>{clients.delete(c.peer);status(clients.size?'متصل: '+clients.size+' جهاز':'جاهز للمشاركة')});c.on('error',()=>{})}
+  function connect(){if(!peer||!targetHost)return;status('جارٍ الاتصال...');hostConn=peer.connect(targetHost,{reliable:true,serialization:'json'});hostConn.on('open',()=>{status('متصل ومزامن');hostConn.send({type:'request-state'})});hostConn.on('data',m=>apply(m,hostConn));hostConn.on('close',()=>{status('انقطع الاتصال — إعادة المحاولة');setTimeout(connect,1200)});hostConn.on('error',()=>{})}
+
+  if(amHost){try{const saved=JSON.parse(localStorage.getItem(ADS_KEY)||'[]');if(Array.isArray(saved)){adsById.clear();saved.forEach(a=>a&&a.id&&adsById.set(String(a.id),a));rebuild()}}catch(e){}
+    let id=localStorage.getItem(HOST_KEY);if(!id){id='openshop-'+Math.random().toString(36).slice(2,10);localStorage.setItem(HOST_KEY,id)}
+    peer=new Peer(id,{debug:0});peer.on('open',()=>status('جاهز للمشاركة'));peer.on('connection',wire);peer.on('error',e=>{if(e.type==='unavailable-id'){const fresh='openshop-'+Math.random().toString(36).slice(2,10);localStorage.setItem(HOST_KEY,fresh);location.reload()}else status('خطأ اتصال: '+e.type)});
+  }else{peer=new Peer(undefined,{debug:0});peer.on('open',connect);peer.on('error',e=>status('خطأ اتصال: '+e.type))}
+
+  startSync=function(){};
+  shareLink=function(){if(!amHost)return; if(!peer||!peer.id)return toast('انتظر حتى تصبح المشاركة جاهزة');const u=new URL(parent.location.origin+parent.location.pathname);u.searchParams.set('host',peer.id);const url=u.toString();if(navigator.share)navigator.share({title:'Open Shop',text:'افتح الرابط للمزامنة المباشرة',url}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(url).then(()=>toast('تم نسخ رابط المشاركة'));else prompt('انسخ الرابط',url)};
+  putAdLive=function(ad){if(amHost){adsById.set(String(ad.id),ad);save();broadcast({type:'add',ad});return Promise.resolve(true)}if(hostConn&&hostConn.open){hostConn.send({type:'add',ad});return Promise.resolve(true)}return Promise.resolve(false)};
+  deleteAdLive=function(id){if(amHost){adsById.delete(String(id));save();broadcast({type:'delete',id});return Promise.resolve(true)}if(hostConn&&hostConn.open){hostConn.send({type:'delete',id});return Promise.resolve(true)}return Promise.resolve(false)};
+
+  const oldExplore=exploreView;
+  exploreView=function(){oldExplore();const badge=document.querySelector('[style*="font-size:12px"]');if(badge){badge.id='syncState';badge.textContent=stateText}const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('مشاركة الرابط'));if(b&&!amHost){b.textContent='متصل بالمضيف';b.disabled=true}}
+  render();status(stateText);
+})();`;
+    d.body.appendChild(s);
+  };
+  d.head.appendChild(peerLib);
+});
+</script>
+</body>
+</html>
