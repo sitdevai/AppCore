@@ -8,7 +8,7 @@ on:
       - '.github/workflows/open-shop-apk.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -36,10 +36,17 @@ jobs:
       - name: Build APK
         working-directory: open-shop-android
         run: gradle --no-daemon app:assembleDebug --stacktrace
-      - name: Rename APK
-        run: cp open-shop-android/app/build/outputs/apk/debug/app-debug.apk Open-Shop-OS-1.4.4.apk
+      - name: Publish public APK
+        run: |
+          mkdir -p downloads
+          cp open-shop-android/app/build/outputs/apk/debug/app-debug.apk downloads/Open-Shop-OS-1.4.4.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/Open-Shop-OS-1.4.4.apk
+          git diff --cached --quiet || git commit -m "Publish Open Shop OS 1.4.4 APK"
+          git push origin HEAD:main
       - uses: actions/upload-artifact@v4
         with:
           name: Open-Shop-OS-1.4.4
-          path: Open-Shop-OS-1.4.4.apk
+          path: downloads/Open-Shop-OS-1.4.4.apk
           if-no-files-found: error
